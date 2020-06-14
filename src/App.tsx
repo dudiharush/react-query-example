@@ -1,11 +1,13 @@
 import * as React from "react";
 import "./styles.css";
-import { server, GET_USERS_PATH } from "./server";
+import { server, GET_USERS_PATH, Person } from "./server";
 import { useQuery, useMutation, queryCache } from "react-query";
 import { ee } from "./ee";
 
+const peopleFetcher = async () => JSON.parse(await server.get()) as Person[]
+
 const LastPersonFirstName = () => {
-  const { status, data: people, error } = useQuery(GET_USERS_PATH, server.get);
+  const { status, data: people, error } = useQuery(GET_USERS_PATH, peopleFetcher);
   if (status === "error") return <div>failed to load. ${error?.message}</div>;
   if (status === "loading") return <div>loading...</div>;
   return (
@@ -23,7 +25,7 @@ const Log = () => {
 }
 
 const LastPersonLastName = () => {
-  const { status, data: people, error } = useQuery(GET_USERS_PATH, server.get);
+  const { status, data: people, error } = useQuery(GET_USERS_PATH, peopleFetcher);
   if (status === 'error') return <div>failed to load. ${error?.message}</div>;
   if (!people) return <div>loading...</div>;
   return (
@@ -34,7 +36,7 @@ const LastPersonLastName = () => {
 const addUserFetcher = ({ id }:{id: number}) => server.addById(id);
 
 const List = () => {
-  const { status, data: people, error } = useQuery(GET_USERS_PATH, server.get);
+  const { status, data: people, error } = useQuery(GET_USERS_PATH, peopleFetcher);
   const [addUser] = useMutation(addUserFetcher, {onSuccess: ()=> queryCache.refetchQueries(GET_USERS_PATH)})
 
   const onClick = async () => {

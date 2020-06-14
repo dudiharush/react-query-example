@@ -37,6 +37,6 @@ export const server = {
     );
 
     dataRevalidationCount++;
-    return people;
+    return JSON.stringify(people);
   }
 };
